@@ -2,5 +2,5 @@ class InvalidApiKey(Exception):
     pass
 
 
-class SeverError(Exception):
+class ServerError(Exception):
     pass
