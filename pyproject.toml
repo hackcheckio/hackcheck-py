@@ -2,7 +2,7 @@
 name = "hackcheck"
 version = "0.0.1"
 description = "An API wrapper for hackcheck.io"
-authors = ["balluh <drip@mailfence.com>"]
+authors = ["balluh <purr@firemail.cc>"]
 repository = "https://github.com/hackcheckio/hackcheck-py/"
 readme = "README.md"
 

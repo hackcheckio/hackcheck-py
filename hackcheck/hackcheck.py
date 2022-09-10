@@ -3,7 +3,7 @@ import requests
 from .errors import InvalidApiKey
 from .types import Result, Source
 
-BASE_URL = "https://api.hackcheck.io/api/v2/lookup"
+BASE_URL = "https://api.hackcheck.io/v3/lookup"
 
 _without = lambda d, w: {k: v for k, v in d.items() if k != w}
 
@@ -17,7 +17,7 @@ class Hackcheck:
         assert self.api_key != ""
 
     def _lookup_request(self, q: str, inp: str) -> list[Result]:
-        response = requests.get(BASE_URL, params={"key": self.api_key, q: inp})
+        response = requests.get(f"{BASE_URL}/{self.api_key}/{q}/{inp}")
 
         if response.status_code == 401:
             raise InvalidApiKey("failed to lookup, this may be to your IP address not being linked, or your api key is invalid")

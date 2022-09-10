@@ -1,5 +1,11 @@
 # Hackcheck-py
-A python wrapper for [hackcheck.io](https://hackcheck.io)'s API
+Official python library for the [hackcheck.io](https://hackcheck.io) API
+
+- [Hackcheck-py](#hackcheck-py)
+  - [Installation](#installation)
+  - [Quick start](#quick-start)
+  - [Methods](#methods)
+
 
 ## Installation
 
@@ -9,18 +15,27 @@ Install with pip
 pip install -U git+https://github.com/hackcheckio/hackcheck-py
 ```
 
-## Usage
+## Quick start
 
 ```py
 from hackcheck import Hackcheck
 
-hc = Hackcheck("your hackcheck api key")
+# Get an api key by purchasing a developer plan https://hackcheck.io/plans
+hc = Hackcheck("MY_API_KEY")
 
-# Returns a list of Result objects
 result = hc.lookup_email("your@email.com")
 
 for r in result:
-    print(f"{r.email}:{r.password}")
+    print(f"Database: {r.source.name}")
+    print(f"Date: {r.source.date}")
+    print(f"Password: {r.password}")
+    print(f"Username: {r.username}")
+    print(f"IP: {r.ip}")
+    print("------")
+
+# Check your ratelimits
+print(f"Current rate limit: {hc.current_rate_limit}")
+print(f"Allowed rate limit: {hc.allowed_rate_limit}")
 ```
 
 ## Methods
