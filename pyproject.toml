@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hackcheck"
-version = "0.0.1"
+version = "1.0.0"
 description = "An API wrapper for hackcheck.io"
 authors = ["balluh <purr@firemail.cc>"]
 repository = "https://github.com/hackcheckio/hackcheck-py/"
