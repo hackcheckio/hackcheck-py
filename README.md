@@ -12,7 +12,7 @@ Official python library for the [hackcheck.io](https://hackcheck.io) API
 Install with pip
 
 ```sh
-pip install -U git+https://github.com/hackcheckio/hackcheck-py
+pip install hackcheck
 ```
 
 ## Quick start
