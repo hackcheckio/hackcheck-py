@@ -20,7 +20,9 @@ class Hackcheck:
         response = requests.get(f"{BASE_URL}/{self.api_key}/{q}/{inp}")
 
         if response.status_code == 401:
-            raise InvalidApiKey("failed to lookup, this may be to your IP address not being linked, or your api key is invalid")
+            raise InvalidApiKey(
+                "failed to lookup, this may be to your IP address not being linked, or your api key is invalid"
+            )
 
         self.allowed_rate_limit = int(response.headers["hc-allowed-rate"])
         self.current_rate_limit = int(response.headers["hc-current-rate"])
@@ -30,7 +32,10 @@ class Hackcheck:
         if not data["success"]:
             raise Exception(data["message"])
 
-        return [Result(**_without(x, "source"), source=Source(**x["source"])) for x in data["results"]]
+        return [
+            Result(**_without(x, "source"), source=Source(**x["source"]))
+            for x in data["results"]
+        ]
 
     def lookup_email(self, email: str) -> list[Result]:
         return self._lookup_request("email", email)
