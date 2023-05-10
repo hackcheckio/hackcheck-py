@@ -10,6 +10,7 @@ class Source(NamedTuple):
 class Result(NamedTuple):
     email: Optional[str]
     username: Optional[str]
+    name: Optional[str]
     password: Optional[str]
     ip: Optional[str]
     phone: Optional[str]
