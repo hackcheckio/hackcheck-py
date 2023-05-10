@@ -55,9 +55,6 @@ class AIOHackcheck:
     async def lookup_username(self, username: str) -> list[Result]:
         return await self._lookup_request("username", username)
     
-    async def name_lookup(self, name: str) -> list[Result]:
-        return await self._lookup_request("name", name)
-
     async def lookup_name(self, name: str) -> list[Result]:
         return await self._lookup_request("name", name)
 
