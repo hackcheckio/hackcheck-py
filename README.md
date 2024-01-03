@@ -17,37 +17,20 @@ pip install hackcheck
 
 ## Quick start
 
-```py
-from hackcheck import Hackcheck
-
-# Get an api key by purchasing a developer plan https://hackcheck.io/plans
-hc = Hackcheck("MY_API_KEY")
-
-result = hc.lookup_email("your@email.com")
-
-for r in result:
-    print(f"Database: {r.source.name}")
-    print(f"Date: {r.source.date}")
-    print(f"Password: {r.password}")
-    print(f"Username: {r.username}")
-    print(f"IP: {r.ip}")
-    print("------")
-
-# Check your ratelimits
-print(f"Current rate limit: {hc.current_rate_limit}")
-print(f"Allowed rate limit: {hc.allowed_rate_limit}")
-```
-
-## Methods
+Example usage
 
 ```py
-hc.lookup_email("your@email.com")
-hc.lookup_username("username")
-hc.lookup_password("password")
-hc.lookup_name("Full Name")
-hc.lookup_ip("8.8.8.8")
-hc.lookup_phone("1234567890")
-hc.lookup_domain("hackcheck.io")
+from src.hackcheck import HackCheckClient, SearchFieldEmail, SearchOptions
+
+with HackCheckClient("MY_API_KEY") as hc:
+    resp = hc.search(
+        SearchOptions(
+            field=SearchFieldEmail,
+            query="example@example.com",
+        ),
+    )
+
+    print(resp.results)
 ```
 
 ## Getting your api key
