@@ -1,19 +1,16 @@
-[tool.poetry]
+[project]
 name = "hackcheck"
-version = "1.2.0"
+version = "2.0.0"
 description = "Official API wrapper for hackcheck.io"
-authors = ["HackCheck <support@hackcheck.io>"]
-repository = "https://github.com/hackcheckio/hackcheck-py/"
+authors = [{ name = "HackCheck", email = "support@hackcheck.io" }]
+dependencies = ["httpx>=0.26.0", "pyserde>=0.12.7"]
+requires-python = ">=3.10"
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.8.0"
-requests = "^2.28.1"
-aiohttp = "^3.8.3"
-
-[tool.poetry.dev-dependencies]
-pytest = "^5.2"
+license = { text = "MIT" }
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm]
+package-type = "library"

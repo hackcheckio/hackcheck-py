@@ -1,11 +1,11 @@
-# Hackcheck-py
+# HackCheck-py
+
 Official python library for the [hackcheck.io](https://hackcheck.io) API
 
-- [Hackcheck-py](#hackcheck-py)
+- [HackCheck-py](#hackcheck-py)
   - [Installation](#installation)
   - [Quick start](#quick-start)
   - [Methods](#methods)
-
 
 ## Installation
 
@@ -49,3 +49,9 @@ hc.lookup_ip("8.8.8.8")
 hc.lookup_phone("1234567890")
 hc.lookup_domain("hackcheck.io")
 ```
+
+## Getting your api key
+
+1. Visit https://hackcheck.io/profile
+2. Add your IP address in the "Authorized IP Addresses" text area and click Update
+3. Copy your API key
