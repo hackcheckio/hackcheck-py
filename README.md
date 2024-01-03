@@ -20,7 +20,7 @@ pip install hackcheck
 Example usage
 
 ```py
-from src.hackcheck import HackCheckClient, SearchFieldEmail, SearchOptions
+from hackcheck import HackCheckClient, SearchFieldEmail, SearchOptions
 
 with HackCheckClient("MY_API_KEY") as hc:
     resp = hc.search(
