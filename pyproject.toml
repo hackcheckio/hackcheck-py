@@ -1,6 +1,6 @@
 [project]
 name = "hackcheck"
-version = "2.0.0"
+version = "3.0.0"
 description = "Official API wrapper for hackcheck.io"
 authors = [{ name = "HackCheck", email = "support@hackcheck.io" }]
 dependencies = ["httpx>=0.26.0", "pyserde>=0.12.7"]
