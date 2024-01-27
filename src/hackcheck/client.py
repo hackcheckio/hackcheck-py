@@ -1,10 +1,28 @@
 import httpx
 from .types import (
+    AssetMonitor,
+    CheckOptions,
+    CheckResponse,
+    DomainMonitor,
+    ErrorResponse,
+    GetMonitorsResponse,
     SearchOptions,
     SearchResponse,
-    SearchResult,
     Source,
-    SearchResponsePagination,
+    UpdateAssetMonitorParams,
+    UpdateDomainMonitorParams,
+)
+from .endpoints import (
+    EndpointCheck,
+    EndpointGetAssetMonitorSources,
+    EndpointGetDomainMonitorSources,
+    EndpointGetMonitor,
+    EndpointGetMonitors,
+    EndpointSearch,
+    EndpointTogglePauseAssetMonitor,
+    EndpointTogglePauseDomainMonitor,
+    EndpointUpdateAssetMonitor,
+    EndpointUpdateDomainMonitor,
 )
 from .errors import (
     InvalidAPIKeyError,
@@ -12,27 +30,14 @@ from .errors import (
     UnauthorizedIPAddressError,
     RateLimitError,
 )
-from serde import from_dict
+from serde import from_dict, to_dict
+
 
 search_url = "https://api.hackcheck.io/search"
 
 
-def _handle_error(response: httpx.Response, data: dict) -> Exception:
-    if response.status_code == 401:
-        if data["error"] == "Invalid API key.":
-            return InvalidAPIKeyError
-        elif data["error"] == "Unauthorized IP address.":
-            return UnauthorizedIPAddressError
-    elif response.status_code == 429:
-        limit = int(response.headers.get("X-HackCheck-Limit", 0))
-        remaining = int(response.headers.get("X-HackCheck-Remaining", 0))
-        return RateLimitError(limit, remaining)
-
-    return ServerError
-
-
-def _generate_url(api_key: str, options: SearchOptions) -> str:
-    thy_url = f"{search_url}/{api_key}/{options.field}/{options.query}"
+def _generate_search_url(api_key: str, options: SearchOptions) -> str:
+    thy_url = EndpointSearch(api_key, options.field, options.query)
 
     query = {}
 
@@ -53,47 +58,122 @@ def _generate_url(api_key: str, options: SearchOptions) -> str:
 class HackCheckClient:
     def __init__(self, api_key: str) -> None:
         self._api_key = api_key
-        self._http = httpx.Client()
-
-    def search(self, options: SearchOptions) -> SearchResponse:
-        response = self._http.get(_generate_url(self._api_key, options))
-
-        data = response.json()
-
-        if response.status_code != 200:
-            raise _handle_error(response, data)
-
-        return from_dict(SearchResponse, data)
-
-    def close(self) -> None:
-        self._http.close()
-
-    def __enter__(self) -> "HackCheckClient":
-        return self
-
-    def __exit__(self, *_) -> None:
-        self.close()
-
-
-class AsyncHackCheckClient:
-    def __init__(self, api_key: str) -> None:
-        self._api_key = api_key
         self._http = httpx.AsyncClient()
 
+    async def _request(self, method: str, url: str, body: dict | None) -> dict:
+        response = await self._http.request(method, url, json=body)
+
+        print(url)
+
+        if response.status_code == 401:
+            data = from_dict(ErrorResponse, response.json())
+            if data.error == "Invalid API key.":
+                raise InvalidAPIKeyError
+            elif data.error == "Unauthorized IP address.":
+                raise UnauthorizedIPAddressError
+            else:
+                raise ServerError
+        elif response.status_code == 429:
+            limit = int(response.headers.get("X-HackCheck-Limit", 0))
+            remaining = int(response.headers.get("X-HackCheck-Remaining", 0))
+            raise RateLimitError(limit, remaining)
+        elif response.status_code == 400:
+            data = from_dict(ErrorResponse, response.json())
+            raise Exception(data.error)
+        elif response.status_code == 404:
+            raise Exception("endpoint not found")
+
+        return response.json()
+
     async def search(self, options: SearchOptions) -> SearchResponse:
-        response = await self._http.get(_generate_url(self._api_key, options))
+        resp = await self._request(
+            "get", _generate_search_url(self._api_key, options), None
+        )
 
-        data = response.json()
+        return from_dict(SearchResponse, resp)
 
-        if response.status_code != 200:
-            raise _handle_error(response, data)
+    async def check(self, options: CheckOptions) -> bool:
+        resp = await self._request(
+            "get", EndpointCheck(self._api_key, options.field, options.query), None
+        )
 
-        return from_dict(SearchResponse, data)
+        return from_dict(CheckResponse, resp).found
+
+    async def get_monitors(self) -> GetMonitorsResponse:
+        resp = await self._request("get", EndpointGetMonitors(self._api_key), None)
+
+        return from_dict(GetMonitorsResponse, resp)
+
+    async def get_asset_monitor(self, monitor_id: str) -> AssetMonitor:
+        resp = await self._request(
+            "get", EndpointGetMonitor(self._api_key, monitor_id), None
+        )
+
+        return from_dict(AssetMonitor, resp)
+
+    async def get_domain_monitor(self, monitor_id: str) -> DomainMonitor:
+        resp = await self._request(
+            "get", EndpointGetMonitor(self._api_key, monitor_id), None
+        )
+
+        return from_dict(DomainMonitor, resp)
+
+    async def get_asset_monitor_sources(self, monitor_id: str) -> list[Source]:
+        resp = await self._request(
+            "get", EndpointGetAssetMonitorSources(self._api_key, monitor_id), None
+        )
+
+        return from_dict(list[Source], resp)
+
+    async def get_domain_monitor_sources(self, monitor_id: str) -> list[Source]:
+        resp = await self._request(
+            "get", EndpointGetDomainMonitorSources(self._api_key, monitor_id), None
+        )
+
+        return from_dict(list[Source], resp)
+
+    async def toggle_pause_assset_monitor(self, monitor_id: str) -> AssetMonitor:
+        resp = await self._request(
+            "post", EndpointTogglePauseAssetMonitor(self._api_key, monitor_id), None
+        )
+
+        return from_dict(AssetMonitor, resp)
+
+    async def toggle_pause_domain_monitor(self, monitor_id: str) -> DomainMonitor:
+        resp = await self._request(
+            "post", EndpointTogglePauseDomainMonitor(self._api_key, monitor_id), None
+        )
+
+        return from_dict(DomainMonitor, resp)
+
+    async def update_asset_monitor(
+        self, monitor_id: str, params: UpdateAssetMonitorParams
+    ) -> AssetMonitor:
+        print("b4")
+        resp = await self._request(
+            "post",
+            EndpointUpdateAssetMonitor(self._api_key, monitor_id),
+            to_dict(params),
+        )
+
+        print("got resp", resp)
+        return from_dict(AssetMonitor, resp)
+
+    async def update_domain_monitor(
+        self, monitor_id: str, params: UpdateDomainMonitorParams
+    ) -> DomainMonitor:
+        resp = await self._request(
+            "post",
+            EndpointUpdateDomainMonitor(self._api_key, monitor_id),
+            to_dict(params),
+        )
+
+        return from_dict(DomainMonitor, resp)
 
     async def close(self) -> None:
         await self._http.aclose()
 
-    async def __aenter__(self) -> "AsyncHackCheckClient":
+    async def __aenter__(self) -> "HackCheckClient":
         return self
 
     async def __aexit__(self, *_) -> None:
