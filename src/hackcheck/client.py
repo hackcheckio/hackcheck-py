@@ -63,8 +63,6 @@ class HackCheckClient:
     async def _request(self, method: str, url: str, body: dict | None) -> dict:
         response = await self._http.request(method, url, json=body)
 
-        print(url)
-
         if response.status_code == 401:
             data = from_dict(ErrorResponse, response.json())
             if data.error == "Invalid API key.":
@@ -149,14 +147,12 @@ class HackCheckClient:
     async def update_asset_monitor(
         self, monitor_id: str, params: UpdateAssetMonitorParams
     ) -> AssetMonitor:
-        print("b4")
         resp = await self._request(
             "post",
             EndpointUpdateAssetMonitor(self._api_key, monitor_id),
             to_dict(params),
         )
 
-        print("got resp", resp)
         return from_dict(AssetMonitor, resp)
 
     async def update_domain_monitor(
