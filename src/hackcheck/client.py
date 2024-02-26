@@ -16,7 +16,8 @@ from .endpoints import (
     EndpointCheck,
     EndpointGetAssetMonitorSources,
     EndpointGetDomainMonitorSources,
-    EndpointGetMonitor,
+    EndpointGetAssetMonitor,
+    EndpointGetDomainMonitor,
     EndpointGetMonitors,
     EndpointSearch,
     EndpointTogglePauseAssetMonitor,
@@ -104,14 +105,14 @@ class HackCheckClient:
 
     async def get_asset_monitor(self, monitor_id: str) -> AssetMonitor:
         resp = await self._request(
-            "get", EndpointGetMonitor(self._api_key, monitor_id), None
+            "get", EndpointGetAssetMonitor(self._api_key, monitor_id), None
         )
 
         return from_dict(AssetMonitor, resp)
 
     async def get_domain_monitor(self, monitor_id: str) -> DomainMonitor:
         resp = await self._request(
-            "get", EndpointGetMonitor(self._api_key, monitor_id), None
+            "get", EndpointGetDomainMonitor(self._api_key, monitor_id), None
         )
 
         return from_dict(DomainMonitor, resp)
@@ -148,7 +149,7 @@ class HackCheckClient:
         self, monitor_id: str, params: UpdateAssetMonitorParams
     ) -> AssetMonitor:
         resp = await self._request(
-            "post",
+            "put",
             EndpointUpdateAssetMonitor(self._api_key, monitor_id),
             to_dict(params),
         )
@@ -159,7 +160,7 @@ class HackCheckClient:
         self, monitor_id: str, params: UpdateDomainMonitorParams
     ) -> DomainMonitor:
         resp = await self._request(
-            "post",
+            "put",
             EndpointUpdateDomainMonitor(self._api_key, monitor_id),
             to_dict(params),
         )

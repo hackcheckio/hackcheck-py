@@ -13,8 +13,11 @@ def EndpointGetMonitors(apiKey: str) -> str:
     return f"{EndpointBase}monitors/{apiKey}/list"
 
 
-def EndpointGetMonitor(apiKey: str, monitor_id: str) -> str:
-    return f"{EndpointBase}monitors/{apiKey}/list/{monitor_id}"
+def EndpointGetAssetMonitor(apiKey: str, monitor_id: str) -> str:
+    return f"{EndpointBase}monitors/{apiKey}/list/asset/{monitor_id}"
+
+def EndpointGetDomainMonitor(apiKey: str, monitor_id: str) -> str:
+    return f"{EndpointBase}monitors/{apiKey}/list/domain/{monitor_id}"
 
 
 def EndpointGetAssetMonitorSources(apiKey: str, monitor_id: str) -> str:
