@@ -5,6 +5,8 @@ Official python library for the [hackcheck.io](https://hackcheck.io) API
 - [HackCheck-py](#hackcheck-py)
   - [Installation](#installation)
   - [Quick start](#quick-start)
+  - [Getting your api key](#getting-your-api-key)
+  - [Other examples](#other-examples)
 
 ## Installation
 
