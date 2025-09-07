@@ -40,6 +40,8 @@ class SearchResult:
     ip_address: str
     phone_number: str
     hash: str
+    other_fields: dict[str, str]
+    sensitive_fields: dict[str, str]
     source: Source
 
 
